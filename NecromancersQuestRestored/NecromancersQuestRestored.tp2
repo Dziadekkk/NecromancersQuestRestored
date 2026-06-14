@@ -1,0 +1,51 @@
+BACKUP ~NecromancersQuestRestored/backup~
+AUTHOR ~Dziadek~
+VERSION ~1.0~
+README ~NecromancersQuestRestored/tra/%LANGUAGE%/readme-nqr.txt~
+
+AUTO_TRA ~NecromancersQuestRestored/tra/%LANGUAGE%~
+
+LANGUAGE ~English~
+         ~en_US~
+         ~NecromancersQuestRestored/tra/en_US/setup.tra~
+
+LANGUAGE ~Polish~
+         ~pl_PL~
+         ~NecromancersQuestRestored/tra/pl_PL/setup.tra~
+
+
+// Main component
+BEGIN @0
+LABEL ~NQR~
+
+// Opcjonalnie: sprawdzenie, że to BGEE albo EET
+ACTION_IF (NOT GAME_IS ~bgee~ AND NOT GAME_IS ~eet~) BEGIN
+  FAIL @1
+END
+
+PRINT ~Installing NecromancersQuestRestored for BGEE / EET...~
+
+// Wykonanie modyfikacji bezpośrednio na pliku dialogu w folderze gry
+COPY_EXISTING ~nemphr.dlg~ ~override~
+  DECOMPILE_AND_PATCH BEGIN
+    
+    // Ustalenie poprawnego ID wpisu w dzienniku (strref) w zależności od platformy
+    PATCH_IF GAME_IS ~eet~ BEGIN
+      SET journal_id = 227321
+    END ELSE BEGIN
+      SET journal_id = 27321
+    END
+
+    // 1. KROK: Usuwam samo kasowanie wpisu z dziennika (ratując zadanie Orduliniana)
+    // Wycięcie samej komendy, bez ruszania białych znaków dookoła + EVAL
+    EVAL REPLACE_TEXTUALLY CASE_INSENSITIVE EVALUATE_REGEXP
+      ~EraseJournalEntry(%journal_id%)~
+      ~~
+
+    // 2. KROK: Modyfikuję moment zabrania amuletu, dodając jego tworzenie w ekwipunku Nemphre tak aby go ukraść
+    REPLACE_TEXTUALLY CASE_INSENSITIVE
+      ~TakePartyItem("OHAMUL13")~
+      ~TakePartyItem("OHAMUL13") DestroyItem("OHAMUL13") GiveItemCreate("OHAMUL13",Myself,1,0,0)~
+	  
+  END
+BUT_ONLY
