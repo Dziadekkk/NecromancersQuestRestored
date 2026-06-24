@@ -1,51 +1,77 @@
 BACKUP ~NecromancersQuestRestored/backup~
 AUTHOR ~Dziadek~
-VERSION ~1.0~
+VERSION ~1.2~
 README ~NecromancersQuestRestored/tra/%LANGUAGE%/readme-nqr.txt~
 
+// Automatyczne mapowanie podfolderów językowych (en_US / pl_PL)
 AUTO_TRA ~NecromancersQuestRestored/tra/%LANGUAGE%~
 
-LANGUAGE ~English~
-         ~en_US~
-         ~NecromancersQuestRestored/tra/en_US/setup.tra~
+// Deklaracja języków
+LANGUAGE ~English~ ~en_US~
+  ~NecromancersQuestRestored/tra/en_US/setup.tra~
 
-LANGUAGE ~Polish~
-         ~pl_PL~
-         ~NecromancersQuestRestored/tra/pl_PL/setup.tra~
+LANGUAGE ~Polish~ ~pl_PL~
+  ~NecromancersQuestRestored/tra/pl_PL/setup.tra~
 
 
-// Main component
+// ============================================================================
+// Główny komponent moda
+// ============================================================================
 BEGIN @0
 LABEL ~NQR~
 
-// Opcjonalnie: sprawdzenie, że to BGEE albo EET
-ACTION_IF (NOT GAME_IS ~bgee~ AND NOT GAME_IS ~eet~) BEGIN
+// Dynamiczne załadowanie pliku z dialogami dla wybranego języka
+LOAD_TRA ~NecromancersQuestRestored/tra/%LANGUAGE%/dialogs.tra~
+
+// Blokada instalacji na niekompatybilnych grach (np. klasyczne BG1/BG2)
+ACTION_IF (NOT GAME_IS ~bgee eet~) BEGIN
   FAIL @1
 END
 
 PRINT ~Installing NecromancersQuestRestored for BGEE / EET...~
 
-// Wykonanie modyfikacji bezpośrednio na pliku dialogu w folderze gry
-COPY_EXISTING ~nemphr.dlg~ ~override~
+
+// ============================================================================
+// MODYFIKACJA ARKIONA
+// ============================================================================
+// Dynamiczny wybór ID wpisu w dzienniku w zależności od platformy
+ACTION_IF GAME_IS ~eet~ BEGIN
+  OUTER_SET arkion_quest_strref = 226853  // ID dla EET (z offsetem +200000)
+END ELSE BEGIN
+  OUTER_SET arkion_quest_strref = 26853   // Oryginalne ID z BG:EE
+END
+
+
+// ============================================================================
+// MODYFIKACJA NEMPHRE
+// ============================================================================
+COPY_EXISTING ~NEMPHR.DLG~ ~override~
   DECOMPILE_AND_PATCH BEGIN
     
-    // Ustalenie poprawnego ID wpisu w dzienniku (strref) w zależności od platformy
+    // Dynamiczny wybór ID wpisu w dzienniku w zależności od platformy
     PATCH_IF GAME_IS ~eet~ BEGIN
       SET journal_id = 227321
     END ELSE BEGIN
       SET journal_id = 27321
     END
 
-    // 1. KROK: Usuwam samo kasowanie wpisu z dziennika (ratując zadanie Orduliniana)
-    // Wycięcie samej komendy, bez ruszania białych znaków dookoła + EVAL
+    // Usuwanie starego wpisu z dziennika (EraseJournalEntry)
     EVAL REPLACE_TEXTUALLY CASE_INSENSITIVE EVALUATE_REGEXP
       ~EraseJournalEntry(%journal_id%)~
       ~~
 
-    // 2. KROK: Modyfikuję moment zabrania amuletu, dodając jego tworzenie w ekwipunku Nemphre tak aby go ukraść
+    // Poprawka niszczenia przedmiotu
     REPLACE_TEXTUALLY CASE_INSENSITIVE
       ~TakePartyItem("OHAMUL13")~
       ~TakePartyItem("OHAMUL13") DestroyItem("OHAMUL13") GiveItemCreate("OHAMUL13",Myself,1,0,0)~
 	  
   END
 BUT_ONLY
+
+
+// ============================================================================
+// KOMPATYBILNOŚĆ Z EET / BGEE DLA ARKIONA
+// ============================================================================
+
+// Kompilacja pliku dialogowego z obsługą bufora zmiennych (EVALUATE_BUFFER)
+COMPILE ~NecromancersQuestRestored/d/hic.d~ EVALUATE_BUFFER

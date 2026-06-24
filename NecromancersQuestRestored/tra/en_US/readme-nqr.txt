@@ -22,7 +22,7 @@ Recommended (maximum) order of completion:
 4. Finally, steal the amulet and the ring back from Nemphre and deliver them to Ordulinian.
 
 NOTES:
-No new dialogues or custom items – just EXP, items, and gold originally offered by these quests.
+The mod includes a short dialogue with Arkion in an alternative quest path. EXP, items, and gold originally offered by these quests.
 The original "bloody" or shortcut solutions to these quests also remain fully possible — the changes 
 are minimalist and do not force any particular playstyle. 
 They simply offer more freedom, just like in classic BG1.
@@ -32,7 +32,7 @@ They simply offer more freedom, just like in classic BG1.
 --------------------------------------------------------------------
 Install like any other WeiDU mod — copy the contents of the archive directly into your main game directory. 
 Run "setup-NecromancersQuestRestored.exe" and follow the on-screen instructions. 
-Installing the modification on a clean BG:EE + SoD DLC does not require "modmerge" or "DLC Merger" but it works fine with them as well.
+Installing the modification on a clean BG:EE + SoD DLC requires "modmerge" or "DLC Merger" to be installed first.
 The mod requires an updated Enhanced Edition version of the game.
 
 The modification should be compatible with most BG:EE mods that use dynamic WeiDU patching.
@@ -43,24 +43,52 @@ The mod supports the Project Infinity installer and should be installed in the "
 
 Tested on BG:EE (2.6.6.0) and EET (14.1) with EEFIXPACK-BETA_2.
 
+In case of installation together with the mods: Golem Construction for Spellcasters and BG1 Unfinished Business (Scar and the Sashenstar’s Daughter), which also modify Arkion’s scripts.
+
+BGEE installation order:
+
+BG1 Unfinished Business
+Necromancers Quest Restored
+Golem Construction for Spellcasters
+
+EET installation order:
+
+BG1 Unfinished Business installed on BGEE (after DLC Merger and EEFIXPACK)
+EET core
+Necromancers Quest Restored
+Golem Construction for Spellcasters
+EET end
+
+In the above case, testing was performed with: Golem Construction for Spellcasters (v6.4) and BG1 Unfinished Business (v17.1).
+
 --------------------------------------------------------------------
 3. CONSOLE CODES FOR QUICK TESTING
 --------------------------------------------------------------------
 BGEE
-C:Eval('ReputationSet(15)') reputation
-C:MoveToArea("AR0703") Ordulinian
-C:MoveToArea("AR0805") Arkion
-C:CreateItem("MISC80",1) quest corpse
-C:MoveToArea("AR0813") Nemphre
-C:CreateItem("OHAMUL13") Arkion's amulet
+C:Eval('ReputationSet(15)') 	reputation
+C:MoveToArea("AR0703") 		Ordulinian
+C:MoveToArea("AR0805") 		Arkion
+C:CreateItem("MISC80",1) 	quest corpse
+C:MoveToArea("AR0813") 		Nemphre
+C:CreateItem("OHAMUL13") 	Arkion's amulet
 EET
-C:MoveToArea("BG0703") Ordulinian
-C:MoveToArea("BG0805") Arkion
-C:MoveToArea("BG0813") Nemphre
+C:MoveToArea("BG0703") 		Ordulinian
+C:MoveToArea("BG0805") 		Arkion
+C:MoveToArea("BG0813") 		Nemphre
+C:MoveToArea("BG0705") 		Elfsong Tavern
 
 --------------------------------------------------------------------
 4. CHANGELOG
 --------------------------------------------------------------------
+v 1.2
+- Fixed journal entry indexing for BGEE and EET. Testing. Readme update.
+
+v 1.1
+- Enabled drunk characters to receive the quest from Arkion (Arkion used to assign the quest to characters with evil or neutral reactions).
+  This conflicted with the quest from Ordulinian, who granted his quest to characters with good reputation.
+  Re-added the dialogue script (hic.d) and dialogues (dialogs.tra), which caused the mod to lose compatibility with all world languages (previously proudly announced in v 0.4).
+  The mod requires DLC Merger.
+
 v 1.0
 - Released on the GitHub platform (public release).
 
